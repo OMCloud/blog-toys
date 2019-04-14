@@ -25,7 +25,7 @@ SECRET_KEY = 'q$&3k&@h57gg^!*!%bgyeeqfy28l_2#hdws-5f659i!&&7b_qd'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '10.100.0.145', '.inevergiveup.top']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '.inevergiveup.top']
 
 
 # Application definition
