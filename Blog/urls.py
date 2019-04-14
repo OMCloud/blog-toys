@@ -22,4 +22,6 @@ urlpatterns = [
     url(r'^category/(?P<pk>[0-9]+)/$', views.CategoryView.as_view(), name='category'), #文章分类
 
     url(r'^tag/(?P<pk>[0-9]+)/$', views.TagView.as_view(), name='tag'), #文章标签
+
+    url(r'^search/$', views.search, name='search'), #全文搜索
 ]

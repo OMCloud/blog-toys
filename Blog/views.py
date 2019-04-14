@@ -7,6 +7,7 @@ from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView, DetailView
 from django.utils.text import slugify
 from markdown.extensions.toc import TocExtension
+from django.db.models import Q
 
 from .models import Post, Category, Tag
 from Comments.forms import CommentForm
@@ -281,3 +282,16 @@ class PostDetailView(DetailView):
         )
 
         return context
+
+
+def search(request):
+    q = request.GET.get('query')
+    error_msg = ''
+
+    if not q:
+        error_msg = "请输入关键词"
+        return render(request, 'Blog/index.html', {'error_msg': error_msg})
+
+    post_list = Post.objects.filter(Q(title__icontains=q) | Q(body__icontains=q))
+    return render(request, 'Blog/index.html', {"error_msg": error_msg,
+                                               "post_list": post_list})
