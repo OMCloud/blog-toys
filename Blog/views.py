@@ -9,6 +9,9 @@ from django.views.generic import ListView, DetailView
 from .models import Post, Category
 from Comments.forms import CommentForm
 
+
+
+################# 首页列表视图###################
 # def index(request):
 #     #return HttpResponse("欢迎您！！！")
 #     post_list = Post.objects.all()
@@ -23,18 +26,22 @@ class IndexView(ListView):
     template_name = 'Blog/index.html'
     context_object_name = 'post_list'
 
+    #通过paginate_by 属性来实现分页， 它的值代表每一页文章的数量
+    paginate_by = 2    #指定每页显示两篇文章
 
-def archives(request, year, month):
-    '''
-    根据日期获取归档文件
-    :param request: 
-    :param year: 
-    :param month: 
-    :return: 
-    '''
-    post_list = Post.objects.all().filter(created_time__year=year,
-                                          created_time__month=month)
-    return render(request, 'Blog/index.html', context={'post_list': post_list})
+
+#####################归档视图##########################
+# def archives(request, year, month):
+#     '''
+#     根据日期获取归档文件
+#     :param request:
+#     :param year:
+#     :param month:
+#     :return:
+#     '''
+#     post_list = Post.objects.all().filter(created_time__year=year,
+#                                           created_time__month=month)
+#     return render(request, 'Blog/index.html', context={'post_list': post_list})
 
 
 class ArchivesView(ListView):
@@ -50,6 +57,15 @@ class ArchivesView(ListView):
                                                         created_time__month=month)
 
 
+########################文章分类视图#########################
+
+# def category(request, pk):
+#     #注册Category类
+#     cate = get_object_or_404(Category, pk=pk)
+#     post_list = Post.objects.all().filter(category=cate)
+#     return render(request, 'Blog/index.html', context={'post_list': post_list})
+
+
 class CategoryView(ListView):
     model = Post
     template_name = "Blog/index.html"
@@ -59,37 +75,32 @@ class CategoryView(ListView):
         cate = get_object_or_404(Category, pk = self.kwargs.get('pk'))
         return super(CategoryView, self).get_queryset().filter(category = cate)
 
+############################文章详情视图###############################
 
-# def category(request, pk):
-#     #注册Category类
-#     cate = get_object_or_404(Category, pk=pk)
-#     post_list = Post.objects.all().filter(category=cate)
-#     return render(request, 'Blog/index.html', context={'post_list': post_list})
-
-def detail(request, pk):
-    post = get_object_or_404(Post, pk=pk)
-
-    #阅读量增加1
-    post.increase_views()
-
-    post.body = markdown.markdown(post.body,
-                                  extensions=[
-                                      'markdown.extensions.extra',
-                                      'markdown.extensions.codehilite',
-                                      'markdown.extensions.toc',
-                                  ]
-                         )
-
-    form = CommentForm()
-    comment_list = post.comment_set.all()
-
-    context = {'post':post,
-               'form': form,
-               'comment_list': comment_list
-               }
-
-
-    return render(request, 'Blog/detail.html', context= context)
+# def detail(request, pk):
+#     post = get_object_or_404(Post, pk=pk)
+#
+#     #阅读量增加1
+#     post.increase_views()
+#
+#     post.body = markdown.markdown(post.body,
+#                                   extensions=[
+#                                       'markdown.extensions.extra',
+#                                       'markdown.extensions.codehilite',
+#                                       'markdown.extensions.toc',
+#                                   ]
+#                          )
+#
+#     form = CommentForm()
+#     comment_list = post.comment_set.all()
+#
+#     context = {'post':post,
+#                'form': form,
+#                'comment_list': comment_list
+#                }
+#
+#
+#     return render(request, 'Blog/detail.html', context= context)
 
 class PostDetailView(DetailView):
     model = Post
