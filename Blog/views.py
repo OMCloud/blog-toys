@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView, DetailView
 
-from .models import Post, Category
+from .models import Post, Category, Tag
 from Comments.forms import CommentForm
 
 
@@ -189,6 +189,17 @@ class CategoryView(ListView):
     def get_queryset(self):
         cate = get_object_or_404(Category, pk = self.kwargs.get('pk'))
         return super(CategoryView, self).get_queryset().filter(category = cate)
+
+
+############################文章标签试图##################################
+class TagView(ListView):
+    model = Post
+    template_name = "Blog/index.html"
+    context_object_name = "post_list"
+
+    def get_queryset(self):
+        tag = get_object_or_404(Tag, pk = self.kwargs.get("pk"))
+        return super(TagView, self).get_queryset().filter(tags = tag)
 
 ############################文章详情视图###############################
 
