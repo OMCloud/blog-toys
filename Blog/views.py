@@ -5,6 +5,8 @@ import markdown
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView, DetailView
+from django.utils.text import slugify
+from markdown.extensions.toc import TocExtension
 
 from .models import Post, Category, Tag
 from Comments.forms import CommentForm
@@ -249,12 +251,20 @@ class PostDetailView(DetailView):
     def get_object(self, queryset=None):
         #重写get_object 方法的目的是需要对post的body值进行渲染
         post = super(PostDetailView, self).get_object(queryset=None)
-        post.body = markdown.markdown(post.body,
-                                      extensions =[
-                                          'markdown.extensions.extra',
-                                          'markdown.extensions.codehilite',
-                                          'markdown.extensions.toc',
-                                      ])
+        # post.body = markdown.markdown(post.body,
+        #                               extensions =[
+        #                                   'markdown.extensions.extra',
+        #                                   'markdown.extensions.codehilite',
+        #                                   'markdown.extensions.toc',
+        #                               ])
+        md = markdown.Markdown(extensions=[
+            'markdown.extensions.extra',
+            'markdown.extensions.codehilite',
+            # 'markdown.extensions.toc',
+            TocExtension(slugify=slugify)
+        ])
+        post.body = md.convert(post.body)
+        post.toc = md.toc
         return post
 
 
