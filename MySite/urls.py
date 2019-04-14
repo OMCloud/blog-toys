@@ -23,5 +23,7 @@ urlpatterns = [
     url(r'', include('Blog.urls')),
     url(r'', include('Comments.urls')),
 
-    url(r'^all/rss/$', AllPostRssFeed(), name='rss')
+    url(r'^all/rss/$', AllPostRssFeed(), name='rss'),  #配置rss订阅
+
+    url(r'^search/', include('haystack.urls')), #配置引入haystack的urls
 ]

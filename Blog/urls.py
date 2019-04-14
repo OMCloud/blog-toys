@@ -23,5 +23,5 @@ urlpatterns = [
 
     url(r'^tag/(?P<pk>[0-9]+)/$', views.TagView.as_view(), name='tag'), #文章标签
 
-    url(r'^search/$', views.search, name='search'), #全文搜索
+    # url(r'^search/$', views.search, name='search'), #全文搜索
 ]
