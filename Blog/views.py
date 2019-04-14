@@ -30,6 +30,121 @@ class IndexView(ListView):
     paginate_by = 2    #指定每页显示两篇文章
 
 
+    def get_context_data(self, **kwargs):
+        '''
+        在类视图中如果想给模板传递一个字典变量，则需要先通过get_context_data获得模板变量
+        因此在这里复写get_context_data方法
+        :param kwargs: 
+        :return: 
+        '''
+        #先获取父类传递给模板的字典变量
+        context = super().get_context_data(**kwargs)
+
+        #其实在父类的字典变量中已经包含paginator、page_obj、is_paginated 这三个模板变量
+        #其中paginator 是 Paginator 的一个实例，page_obj 是 Page 的一个实例，is_paginated 是一个布尔变量，用于指示是否已分页。
+        paginator = context.get("paginator")
+        page_obj = context.get("page_obj")
+        is_paginated = context.get("is_paginated")
+
+        #调用自定义的paginate_data方法获取分页所需数据
+        paginate_data = self.paginate_data(paginator, page_obj, is_paginated)
+
+        #将分页信息更新到context
+        context.update(paginate_data)
+
+        #将context内容返回
+        return context
+
+    def paginate_data(self, paginator, page_obj, is_paginated):
+        '''
+        自定义分页数据
+        :param paginator: 
+        :param page: 
+        :param is_paginated: 
+        :return: 
+        '''
+        if not is_paginated:
+            #如果没有分页，就直接返回空{}
+            return {}
+
+        #当前分页左边连续的页码号
+        left_page_num = []
+
+        #当前分页左边连续的页码号
+        right_page_num = []
+
+        #标签第一页后是否显示省略号
+        first_right_has = False
+
+        # 标签第最后一页后是否显示省略号
+        last_left_has = False
+
+        #标记是否要显示第一页，如果当前页左边的连续页码中包含第一页，就不用在显示第一页
+        show_first_page = False
+
+        #原因同上
+        show_last_page = False
+
+        #获取当前请求的页号
+        page_number = page_obj.number
+        
+        #获取分页后的总页数
+        total_pages = paginator.num_pages
+
+        #获得整个分页列表
+        page_range = paginator.page_range
+
+        if page_number == 1:
+            #如果请求的当前页为1.那么当前页左边就不需要数据
+
+            #如果只想获取当前页后的连续两页，如下
+            right_page_num = page_range[page_number:page_number + 2]
+
+            #如果最右边的页码比最后的页码减去1还要小，
+            #说明右边的页码和最后一页的页之间还有其它页码，因此需要显示省略号
+            if right_page_num[-1] < total_pages - 1:
+                last_left_has = True
+
+            if right_page_num[-1] < total_pages:
+                show_last_page = True
+
+        elif page_number == total_pages:
+
+            left_page_num = page_range[(page_number -3) if (page_number - 3) > 0 else 0:page_number - 1]
+
+            #如果最左侧页码大于2，则1号页和页码间有省略号
+            if left_page_num[0] > 2:
+                first_right_has = True
+
+            #如果最左侧页码大于1，则需要显示1号页码
+            if left_page_num[0] > 1:
+                show_first_page = True
+        else:
+            left_page_num = page_range[(page_number -3) if (page_number -3) > 0 else 0:page_number - 1]
+            right_page_num = page_range[page_number:page_number + 2]
+
+            if right_page_num[-1] < total_pages - 1:
+                last_left_has = True
+            if right_page_num[-1] < total_pages:
+                show_last_page = True
+
+            if left_page_num[0] > 2:
+                first_right_has = True
+            if left_page_num[0] > 1:
+                show_first_page = True
+
+        data = {
+            'left_page_num' : left_page_num,
+            'right_page_num': right_page_num,
+            'first_right_has': first_right_has,
+            'last_left_has': last_left_has,
+            'show_first_page': show_first_page,
+            'show_last_page': show_last_page
+        }
+
+        return data
+
+
 #####################归档视图##########################
 # def archives(request, year, month):
 #     '''
