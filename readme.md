@@ -97,4 +97,4 @@ http://127.0.0.1:8000/admin
 
 如图所示：
 
-![示例图片](./Blog/static/blog/images/20190415082327.png)
+![示例图片](Blog/static/blog/images/20190415.png)
